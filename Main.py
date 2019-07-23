@@ -23,19 +23,11 @@ def main():
 
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_LEFT]:
-            x -= vel
-
-        if keys[pygame.K_RIGHT]:
-            x += vel
-
-        if keys[pygame.K_UP]:
-            y -= vel
-
-        if keys[pygame.K_DOWN]:
-            y += vel
+        y-=-1
+        pantalla.fill((0,0,0))
 
         reloj.tick(20)
+
         pantalla.blit(texto1, (x,y))
         pygame.display.update()
 
