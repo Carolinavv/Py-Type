@@ -55,18 +55,14 @@ def dameLetraApretada(key):
         return("y")
     elif key == K_z:
         return("z")
-    elif key == K_KP_MINUS:
-        return("-")
     elif key == K_SPACE:
        return(" ")
-    elif key == K_ESCAPE or K_END :
+    elif key == K_ESCAPE:
         pygame.quit()
         run = False
-    elif key == K_RETURN:
-        return ("borrar")
 
     else:
-        return(" ")
+        return("")
 
    
     
@@ -87,23 +83,29 @@ def main():
     pantalla = pygame.display.set_mode((400,600),0,32)
     pygame.display.set_caption("Prueba")
     fuente = pygame.font.Font(None, 30)
-    fuenteinfo = pygame.font.Font(None, 15)
-    puntaje = fuente.render("Puntaje", 10, (255, 0, 0))
+    fuenteinfo = pygame.font.Font(None, 20)
+    puntaje = fuente.render("Puntaje", 10, (255, 0, 255))
     informacion = fuenteinfo.render("Para finalizar presione esc ", 10 , (155,155,155))
-    lista = ["casa","hola","mano","jamon"]
     palabraUsuario = ""
     puntos = 0
+    juego = True
    
-    for palabra in lista:
-        
-        texto = fuente.render(palabra, 10, (255, 255, 255))#texto ingresado por el usuario
+    file=open('Extracto.txt','r')
+    data=file.readlines()
+    datos = []
+    
+    for renglon in data:
+        for a in renglon.split(' '):
+            datos.append(a)
 
+    while juego:
+        aa = random.choice(datos)    
+        texto = fuente.render(aa, 10, (255, 255, 255))#texto ingresado por el usuario
         x = (random.randint(0,300))#posicion random a x
         y = 0
-        vel = 6
+        vel = 5
         run = True
-        
-    
+
                 
         while run:
             reloj = pygame.time.Clock()
@@ -115,30 +117,35 @@ def main():
 
             for e in pygame.event.get():
                 if e.type == KEYDOWN:
-                    letra = dameLetraApretada(e.key)
-                    palabraUsuario += letra
+                        letra = dameLetraApretada(e.key)
+                        if type(letra) == str:
+                            palabraUsuario += letra#concatena las letras presionadas 
 
-            pantalla.blit(texto, (x,y))#Muestra el texto en las posiciones x e y
-            pantalla.blit(puntaje,(280,12))#Palabra puntaje esquina superior
-            pantalla.blit(informacion, (2,590))#Informacion
+            pantalla.blit(texto, (x,y)) #Muestra el texto en las posiciones x e y
+            pantalla.blit(puntaje,(280,12)) #Palabra puntaje esquina superior
+            pantalla.blit(informacion, (2,580)) #Informacion
             pantalla.blit(fuente.render(str(puntos), 10, (255,0,0)),(360,12))
-            pygame.draw.line(pantalla, (40, 210, 250), (0, 500), (400, 500), 1)#Linea = Pantalla, color, start_pos, end_pos, Ancho
-            pantalla.blit(fuente.render(palabraUsuario,10, (255,0,0)),(0,0))#Muestra la palabra escrita por el usuario
-            pygame.display.update()#Actualiza la pantalla
-            if palabraUsuario == palabra:
+            pygame.draw.line(pantalla, (40, 210, 250), (0, 500), (400, 500), 1) #Linea = Pantalla, color, start_pos, end_pos, Ancho
+            pantalla.blit(fuente.render(palabraUsuario,10, (255,0,0)),(0,0)) #Muestra la palabra escrita por el usuario
+            pygame.display.update() #Actualiza la pantalla
+            
+            if palabraUsuario == aa:
                 puntos += 10
                 vel = 0
                 palabraUsuario = ""
                 break
 
+            if len(palabraUsuario) >= len(aa) :
+                    palabraUsuario = ""
+                    break
+
             if y >= 490:
                 vel = 0
                 puntos -=10
+                if len(palabraUsuario) <= len(aa) :
+                    palabraUsuario = ""
+                    break
                 break
-
-   
-   
-
 
 
 if __name__ == '__main__':
