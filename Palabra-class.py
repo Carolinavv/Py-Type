@@ -8,10 +8,10 @@ class Palabra():
     def __init__(self, valor):
         pass
 
-    def Mover():
+    def Mover(valor):
         pass
 
-    def Destruir():
+    def Destruir(valor):
         pass
 
 
