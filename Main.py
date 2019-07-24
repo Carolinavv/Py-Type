@@ -2,6 +2,7 @@ import pygame
 import random
 from pygame.locals import *
 
+
 def dameLetraApretada(key):
     if key == K_a:
         return("a")
@@ -60,95 +61,119 @@ def dameLetraApretada(key):
     elif key == K_ESCAPE:
         pygame.quit()
         run = False
-
     else:
         return("")
 
-   
-    
 
-    
+
+
+def Palabras():
+    file=open('Extracto.txt','r')
+    data=file.readlines()
+    datos = []#Array que contiene todas las palabras
+
+    for renglon in data:
+        for a in renglon.split(' '):
+            datos.append(a)
+
+    return datos
+
+def MuestramePalabra(texto,x,y,palabraUsuario,fuente,pantalla):
+    pantalla.blit(texto, (x,y)) #Muestra el texto en las posiciones x e y
+    pantalla.blit(fuente.render(palabraUsuario,10, (255,0,0)),(0,0)) #Muestra la palabra escrita por el usuario
+
+
+def ganaste(juego,puntos,pantalla,fuente,fuenteinfo):
+    juego = False
+    pantalla.fill((0,0,0))#PantallaNegra
+    pantalla.blit(fuente.render("Ganaste!!!", 10, (255,0,255)),(100,200))
+    pantalla.blit(fuenteinfo.render("Presione esc para salir", 10, (255,0,0)),(110,230))
+    pygame.display.update()#Actualiza la pantalla
+
+def perdiste(juego,puntos,pantalla,fuente,fuenteinfo):
+    juego = False
+    pantalla.fill((0,0,0))#PantallaNegra
+    pantalla.blit(fuente.render("Perdiste!!!", 10, (255,255,0)),(100,200))
+    pantalla.blit(fuenteinfo.render("Presione esc para salir", 10, (255,0,0)),(110,230))
+    pygame.display.update()#Actualiza La pantalla
 
 
 def main():
+
     pygame.init()
+    pantalla = pygame.display.set_mode((400,600),0,32) #Define Tamaño de la Pantalla
+    pygame.display.set_caption("Py-Type")#Nombre de la ventana
 
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
 
-                
-    key = pygame.key.get_pressed()
-    pantalla = pygame.display.set_mode((400,600),0,32)
-    pygame.display.set_caption("Prueba")
-    fuente = pygame.font.Font(None, 30)
-    fuenteinfo = pygame.font.Font(None, 20)
+
+    key = pygame.key.get_pressed()#Toma tecla presionada
+    fuente = pygame.font.Font(None, 30)#Fuente de la palabra
+    fuenteinfo = pygame.font.Font(None, 20)#Fuente de la informacion
+    fuenteganadora = pygame.font.Font(None,50)#Fuente de la palabra ganadora o perdedora
     puntaje = fuente.render("Puntaje", 10, (255, 0, 255))
-    informacion = fuenteinfo.render("Para finalizar presione esc ", 10 , (155,155,155))
+    informacion = fuenteinfo.render("Para finalizar presione esc ", 10 , (155,155,155))#Muestra informacion al usuario
     palabraUsuario = ""
     puntos = 0
-    juego = True
-   
-    file=open('Extracto.txt','r')
-    data=file.readlines()
-    datos = []
-    
-    for renglon in data:
-        for a in renglon.split(' '):
-            datos.append(a)
+    juego =True
+
 
     while juego:
-        aa = random.choice(datos)    
-        texto = fuente.render(aa, 10, (255, 255, 255))#texto ingresado por el usuario
+        palabrita = random.choice(Palabras()) #Elije una palabra random a mostrar
+        texto = fuente.render(palabrita, 10, (255, 255, 255))#texto ingresado por el usuario
         x = (random.randint(0,300))#posicion random a x
         y = 0
-        vel = 5
+        vel = 5#velocidad de decenso
         run = True
 
-                
         while run:
             reloj = pygame.time.Clock()
             y += vel#Incrementa a "y" en cada vuelta
             pantalla.fill((0,0,0))#PantallaNegra
-            
-
             reloj.tick(20)
 
             for e in pygame.event.get():
                 if e.type == KEYDOWN:
                         letra = dameLetraApretada(e.key)
                         if type(letra) == str:
-                            palabraUsuario += letra#concatena las letras presionadas 
+                            palabraUsuario += letra #concatena las letras presionadas
 
-            pantalla.blit(texto, (x,y)) #Muestra el texto en las posiciones x e y
-            pantalla.blit(puntaje,(280,12)) #Palabra puntaje esquina superior
-            pantalla.blit(informacion, (2,580)) #Informacion
-            pantalla.blit(fuente.render(str(puntos), 10, (255,0,0)),(360,12))
+            MuestramePalabra(texto,x,y,palabraUsuario,fuente,pantalla)
+            pantalla.blit(puntaje,(280,12)) # Muestra palabra puntaje esquina superior
+            pantalla.blit(fuente.render(str(puntos), 10, (255,0,0)),(360,12))# Muestra el puntaje
+            pantalla.blit(informacion, (2,580)) #Muestra la informacion en la esquina inferior
             pygame.draw.line(pantalla, (40, 210, 250), (0, 500), (400, 500), 1) #Linea = Pantalla, color, start_pos, end_pos, Ancho
-            pantalla.blit(fuente.render(palabraUsuario,10, (255,0,0)),(0,0)) #Muestra la palabra escrita por el usuario
             pygame.display.update() #Actualiza la pantalla
-            
-            if palabraUsuario == aa:
+
+
+            if palabraUsuario == palabrita: #Si la palabra ingresada por el usuario es lamismo que se muestra por pantalla, borrar
                 puntos += 10
                 vel = 0
                 palabraUsuario = ""
                 break
 
-            if len(palabraUsuario) >= len(aa) :
-                    palabraUsuario = ""
-                    break
+            if len(palabraUsuario) >= len(palabrita) :
+                palabraUsuario = ""
+                break
 
-            if y >= 490:
+            if y >= 490:#Si la palabra sobrepasa la linea celeste esta se bora y resta -10 pts
                 vel = 0
                 puntos -=10
-                if len(palabraUsuario) <= len(aa) :
+                if len(palabraUsuario) <= len(palabrita) :#Borra palabra ingresada por el ususario
                     palabraUsuario = ""
-                    break
+                break
+            if puntos == 10: #Si el puntaje llega a ese numero Ganas!
+                ganaste(juego,puntos,pantalla,fuenteganadora,fuenteinfo)
+                break
+
+            if puntos == -10:  #Si el puntaje llega a ese numero Pierdes :(
+                perdiste(juego,puntos,pantalla,fuenteganadora,fuenteinfo)
                 break
 
 
 if __name__ == '__main__':
-  
+
     main()
-    
